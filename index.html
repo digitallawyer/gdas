@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <title>Index</title>
+    <link rel="shortcut icon" href="assets/img/favicon.ico">
+
+    <!-- build:css -->
+    <link rel="stylesheet" href="assets/css/main.css">  
+    <!-- endbuild -->      
+      
+    <link rel="stylesheet" href="assets/css/theme.css">
+
+  </head>
+
+  <body>
+<div style="background: url(https://source.unsplash.com/collection/9468595/1600x900) ; background-size:cover" class="page-holder bg-cover">
+
+<div class="d-flex py-5 flex-column" style="height: 100vh;">
+  <header class="text-center text-white py-5">
+    <h1 class="display-2 font-weight-bold" id="time" style="margin-top: 25vh;">
+    <h1 class="display-4 font-weight-bold"><span id="demo"> </span>, Pieter</h1>
+  </header>
+
+  <div class="text-white">
+    <div class="weather-info" style="position: absolute; right: 20px; top: 20px;">
+
+      <div id="temperature" class="info text-right" style="font-size: 2rem">
+        <span id="temperature-num"></span>
+        <span>°</span>
+        <span id="temperature-scale">C</span>
+
+      </div>
+      <span id="location" class="info"></span>
+      <span> - </span>
+      <span id="weather-condition" class="info"></span>     
+      <span id="weather-icon" class="info"></span>
+    </div>
+  </div>
+
+</div>
+<div class="container-md fixed-bottom" style="max-width:640px;">
+<div class="alert alert-light" style="opacity: 0.8;" role="alert">
+  <a href="https://www.legal.io" target="_blank"><img src="assets/img/legalio.png" class="mr-3" width="50"></a>
+  <a href="https://www.gmail.com" target="_blank"><img src="assets/img/gmail.png" class="mr-3" width="60"></a>
+  <img src="assets/img/calendar.png"  class="mx-2" width="42">
+  <img src="assets/img/drive.png"  class="mx-2" width="42">
+  <img src="assets/img/analytics.png"  class="mx-2" width="42">
+  <img src="assets/img/pipedrive.png"  class="mx-2" width="60">
+  <img src="assets/img/outreach.png"  class="mx-2" width="42">
+</div>
+</div>
+
+<script>
+    document.write("<center><font size=+3 style='color: white;'>");
+    var day = new Date();
+    var hr = day.getHours();
+    if (hr >= 0 && hr < 12) {
+        document.getElementById("demo").innerHTML = "Good Morning";
+    } else if (hr == 12) {
+        document.getElementById("demo").innerHTML = "Good Noon";
+    } else if (hr >= 12 && hr <= 17) {
+        document.getElementById("demo").innerHTML = "Good Afternoon";
+    } else {
+        document.getElementById("demo").innerHTML = "Good Evening";
+    }
+    document.write("</font></center>");
+    
+    function checkTime(i) {
+      if (i < 10) {
+        i = "0" + i;
+      }
+      return i;
+    }
+
+    function startTime() {
+      var today = new Date();
+      var h = today.getHours();
+      var m = today.getMinutes();
+      var s = today.getSeconds();
+      // add a zero in front of numbers<10
+      m = checkTime(m);
+      s = checkTime(s);
+      document.getElementById('time').innerHTML = h + ":" + m;
+      t = setTimeout(function() {
+        startTime()
+      }, 500);
+    }
+    startTime();
+
+    const loc = document.getElementById("location");
+    const temNum = document.getElementById("temperature-num");
+    const temScale = document.getElementById("temperature-scale");
+    const weatherCon = document.getElementById("weather-condition");
+    const weatherIcon = document.getElementById("weather-icon");
+
+    // get location
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          getWeather(position.coords.latitude, position.coords.longitude);
+        });
+      } else {
+        loc.innerHTML = "Geolocation is not supported by this browser.";
+      }
+    }
+
+    // get weather data according to the location
+    function getWeather(lat, long) {
+      const root = "https://fcc-weather-api.glitch.me/api/current?";
+      fetch(`${root}lat=${lat}&lon=${long}`, { method: "get" })
+        .then(resp => resp.json())
+        .then(data => {
+          updateDataToUI(data.name, data.weather, data.main.temp);
+        })
+        .catch(function(err) {
+          console.error(err);
+        });
+    }
+
+    // update the data from API to DOM
+    function updateDataToUI(location, weather, temp) {
+      //weatherIcon.innerHTML = `<img src="${weather[0].icon}" />`;
+      weatherCon.innerHTML = weather[0].main;
+      loc.innerHTML = location;
+      temNum.innerHTML = `${temp}`;
+    }
+
+    window.onload = function() {
+      getLocation();
+    };
+
+    // helper function change from C to F
+    function cToF(celsius) {
+      return celsius * 9 / 5 + 32;
+    }
+    // helper function: change from F to C
+    function fToC(fahrenheit) {
+      return (fahrenheit - 32) * 5 / 9;
+    }
+
+    function toggleScale() {
+      if (temScale.innerHTML === "C") {
+        temNum.innerHTML = cToF(temNum.innerHTML).toFixed(2);
+        temScale.innerHTML = "F";
+      } else if (temScale.innerHTML === 'F') {
+        temNum.innerHTML = fToC(temNum.innerHTML).toFixed(2);
+        temScale.innerHTML = "C";
+      }
+    }
+
+    // toggle the temperature scale
+    temScale.addEventListener("click", toggleScale);
+</script>
+
+    <!-- build:js -->
+    <script src="assets/js/main.js"></script>   
+     <!-- endbuild -->    
+      
+    <script src="assets/js/theme.js"></script>
+
+  </body>
+
+</html>
